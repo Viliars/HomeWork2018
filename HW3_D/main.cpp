@@ -1,6 +1,6 @@
 #include <iostream>
 using namespace std;
-
+// RADIX
 void BitsRadixSort(unsigned int a[], int n)
 {
     //  255 = 11111111
@@ -9,14 +9,18 @@ void BitsRadixSort(unsigned int a[], int n)
     int point[256];
     for (int i = 0; i < 32; i +=8)
 	{
+	    // vector for sum
 		point[0] = 0;
-
 		// buf=0
-		for (int j = 0; j < 256; j++) buf[j] = 0;
+		for (int k = 0; k < 256; k++) buf[k] = 0;
+        // count
+		for (int k = 0; k < n; k++) buf[a[k] >> i & 255]++;
+        // run sum
+		for (int k = 1; k < 256; k++) point[k] = point[k - 1] + buf[k - 1];
+        // set locate
+		for (int k = 0; k < n; ++k) bufer[point[a[k] >> i & 255]++] = a[k];
 
-		for (int j = 0; j < n; j++) buf[a[j] >> i & 255]++;
-		for (int j = 1; j < 256; j++) point[j] = point[j - 1] + buf[j - 1];
-		for (int j = 0; j < n; ++j) bufer[point[a[j] >> i & 255]++] = a[j];
+		// swap
 		for(int i=0;i<n;i++) a[i]=bufer[i];
 	}
 }
