@@ -43,6 +43,5 @@ for (int i = 0; i < n; i += 2)
     sum = (sum + a[i]) % l;
 }
 cout << sum;
-
     return 0;
 }
