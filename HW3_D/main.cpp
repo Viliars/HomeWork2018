@@ -18,7 +18,7 @@ void BitsRadixSort(unsigned int a[], int n)
         // run sum
 		for (int k = 1; k < 256; k++) point[k] = point[k - 1] + buf[k - 1];
         // set locate
-		for (int k = 0; k < n; ++k) bufer[point[a[k] >> i & 255]++] = a[k];
+		for (int k = 0; k < n; k++) bufer[point[a[k] >> i & 255]++] = a[k];
 
 		// swap
 		for(int i=0;i<n;i++) a[i]=bufer[i];
