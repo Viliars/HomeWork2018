@@ -1,155 +1,187 @@
 #include<stdio.h>
 #include<string.h>
+#include<stdlib.h>
+
+
+// int fputs( const char * string, FILE * filestream );
+// char * fgets( char * string, int num, FILE * filestream );
+// int strcmp( const char * string1, const char * string2 );
+
+int too(int core)
+{
+ // 2^core
+    return 1<<core;
+}
+
+void CopyFile(const char* name_input,const char* name_output,char** string,int counter)
+{
+    FILE* IN = fopen(name_input, "r");
+	FILE* OUT = fopen(name_output, "w");
+	for (int i = 1; i < counter; i++)
+	{
+		fgets(string[0], 10010, IN);
+		fputs(string[0], OUT);
+	}
+	fgets(string[0], 10010, IN);
+	string[0][strlen(string[0]) - 1] = '\0';
+	fputs(string[0], OUT);
+	fclose(OUT);
+	fclose(IN);
+}
 
 void external_sorting(const char* name_input,const char* name_output)
 {
-    unsigned core;
-    unsigned count = 0;
-    unsigned i, j, n, k, c;
-    FILE * input = fopen(name_input, "r");
+    int core;
+    int i=0, j=0;
+    int n=0, k=0;
+    int center=0;
+    int counter=0;
+    FILE * IN = fopen(name_input, "r");
     FILE * bufer[2];
+    // bufer files
     bufer[0] = fopen("bufer_0_241.txt", "w");
 	bufer[1] = fopen("bufer_1_241.txt", "w");
-	FILE * output = fopen("bufer_2_241.txt", "w");
-	char str1[10002];
-	char str2[10002];
+	FILE * OUT = fopen("bufer_2_241.txt", "w");
+	//-----------------------------------------------
+	char** string;
+	string=(char**)malloc(2*sizeof(char*));
+	for(int i=0;i<2;i++)
+    {
+        string[i]=(char*)malloc(10011*sizeof(char));
+    }
+    //-----------------------------------------------
 	int choose;
-	while (fgets(str1, 10001, input)) fputs(str1, bufer[count++ & 1]);
-	fputc('\n', bufer[!(count & 1)]);
-	fclose(input);
-	fclose(bufer[0]);
-	fclose(bufer[1]);
-	bufer[0] = fopen("bufer_0_241.txt", "r");
-	bufer[1] = fopen("bufer_1_241.txt", "r");
-	for (core = 0; (count - 1) >> core > 0; core++)
+	while (fgets(string[0], 10010, IN)) { fputs(string[0], bufer[counter&1]); counter++; }
+	fputc('\n', bufer[!(counter & 1)]);
+	fclose(IN);
+	fclose(bufer[0]); fclose(bufer[1]);
+	bufer[0] = fopen("bufer_0_241.txt", "r"); bufer[1] = fopen("bufer_1_241.txt", "r");
+	for (core = 0; (counter - 1) >> core > 0; core++)
 	{
-		n = (1 << core);
-		k = count >> (core + 1);
-		for (c = 0; c < k; ++c)
+		n = too(core);
+		k = counter >> (core + 1);
+		for (center = 0; center < k; center++)
 		{
-			for (i = 0, j = 0,
-				fgets(str1, 10001, bufer[0]),
-				fgets(str2, 10001, bufer[1]);
-				i < n && j < n;)
+		    fgets(string[0], 10010, bufer[0]);
+            fgets(string[1], 10010, bufer[1]);
+            i = 0;
+            j = 0;
+			for (; i < n && j < n;)
 			{
-				choose = strcmp(str1, str2);
+				choose = strcmp(string[0], string[1]);
 				if (choose < 0)
 				{
-					fputs(str1, output);
-					if (++i < n) fgets(str1, 10001, bufer[0]);
+					fputs(string[0], OUT);
+					i++;
+					if (i < n) fgets(string[0], 10010, bufer[0]);
 				}
 				else
 				{
-					fputs(str2, output);
-					if (++j < n) fgets(str2, 10001, bufer[1]);
+					fputs(string[1], OUT);
+					j++;
+					if (j < n) fgets(string[1], 10010, bufer[1]);
 				}
 			}
 			if (i < n)
 			{
-				fputs(str1, output);
-				for (++i; i < n; ++i)
+				fputs(string[0], OUT);
+				i++;
+				for (; i < n; i++)
 				{
-					fgets(str1, 10001, bufer[0]);
-					fputs(str1, output);
+					fgets(string[0], 10010, bufer[0]);
+					fputs(string[0], OUT);
 				}
 			}
 			if (j < n)
 			{
-				fputs(str2, output);
-				for (++j; j < n; ++j)
+				fputs(string[1], OUT);
+				j++;
+				for (; j < n; j++)
 				{
-					fgets(str2, 10001, bufer[1]);
-					fputs(str2, output);
+					fgets(string[1], 10010, bufer[1]);
+					fputs(string[1], OUT);
 				}
 			}
 		}
-		k = count & ((1 << core) - 1);
-		c = count & (1 << core);
-		if (!(c && k))
+		k = counter & (too(core) - 1);
+		center = counter & too(core);
+
+		if (center && k)
 		{
-			c += k;
-			for (i = 0; i < c; ++i)
+		    fgets(string[0], 10010, bufer[0]);
+            fgets(string[1], 10010, bufer[1]);
+            i = 0;
+            j = 0;
+			for (; i < n && j < k;)
 			{
-				fgets(str1, 10001, bufer[0]);
-				fputs(str1, output);
-			}
-		}
-		else
-		{
-			for (i = 0, j = 0,
-				fgets(str1, 10001, bufer[0]),
-				fgets(str2, 10001, bufer[1]);
-				i < n && j < k;)
-			{
-				choose = strcmp(str1, str2);
+				choose = strcmp(string[0], string[1]);
 				if (choose < 0)
 				{
-					fputs(str1, output);
-					++i;
-					if (i < n) fgets(str1, 10001, bufer[0]);
+					fputs(string[0], OUT);
+					i++;
+					if (i < n) fgets(string[0], 10010, bufer[0]);
 				}
 				else
 				{
-					fputs(str2, output);
-					++j;
-					if (j < k) fgets(str2, 10001, bufer[1]);
+					fputs(string[1], OUT);
+					j++;
+					if (j < k) fgets(string[1], 10010, bufer[1]);
 				}
 			}
 			if (i < n)
 			{
-				fputs(str1, output);
-				for (++i; i < n; ++i)
+				fputs(string[0], OUT);
+				for (i++; i < n; i++)
 				{
-					fgets(str1, 10001, bufer[0]);
-					fputs(str1, output);
+					fgets(string[0], 10010, bufer[0]);
+					fputs(string[0], OUT);
 				}
 			}
 			if (j < k)
 			{
-				fputs(str2, output);
-				for (++j; j < k; ++j)
+				fputs(string[1], OUT);
+				j++;
+				for (; j < k; j++)
 				{
-					fgets(str2, 10001, bufer[1]);
-					fputs(str2, output);
+					fgets(string[1], 10010, bufer[1]);
+					fputs(string[1], OUT);
 				}
 			}
 		}
-		fclose(output);
-		fclose(bufer[0]);
-		fclose(bufer[1]);
-		if ((count - 1) >> core == 1)
-			break;
-		output = fopen("bufer_2_241.txt", "r");
-		bufer[0] = fopen("bufer_0_241.txt", "w");
-		bufer[1] = fopen("bufer_1_241.txt", "w");
-		k = ((count - 1) / (n <<= 1)) + 1;
-		for (c = 0; c < k; ++c)
+		else
 		{
-			i = 0;
-			while (i++ < n && fgets(str1, 10001, output))
+		    center+=k;
+			for (i = 0; i < center; i++)
 			{
-				fputs(str1, bufer[c & 1]);
+				fgets(string[0], 10010, bufer[0]);
+				fputs(string[0], OUT);
 			}
 		}
-		fclose(output);
+		fclose(OUT);
 		fclose(bufer[0]);
 		fclose(bufer[1]);
-		output = fopen("bufer_2_241.txt", "w");
+		if ((counter - 1) >> core == 1) break;
+		OUT = fopen("bufer_2_241.txt", "r");
+		bufer[0] = fopen("bufer_0_241.txt", "w");
+		bufer[1] = fopen("bufer_1_241.txt", "w");
+		k = ((counter - 1) / (n <<= 1)) + 1;
+		for (center = 0; center < k; center++)
+		{
+			i = 0;
+			while (i < n && fgets(string[0], 10010, OUT))
+			{
+			    i++;
+				fputs(string[0], bufer[center & 1]);
+			}
+		}
+		fclose(OUT);
+		fclose(bufer[0]);
+		fclose(bufer[1]);
+		OUT = fopen("bufer_2_241.txt", "w");
 		bufer[0] = fopen("bufer_0_241.txt", "r");
 		bufer[1] = fopen("bufer_1_241.txt", "r");
 	}
-	input = fopen("bufer_2_241.txt", "r");
-	output = fopen(name_output, "w");
-	for (i = 1; i < count; ++i)
-	{
-		fgets(str1, 10001, input);
-		fputs(str1, output);
-	}
-	fgets(str1, 10001, input);
-	str1[strlen(str1) - 1] = '\0';
-	fputs(str1, output);
-	fclose(output);
-	fclose(input);
+	CopyFile("bufer_2_241.txt",name_output,string,counter);
 	remove("bufer_0_241.txt");
 	remove("bufer_1_241.txt");
 	remove("bufer_2_241.txt");
@@ -157,7 +189,7 @@ void external_sorting(const char* name_input,const char* name_output)
 
 
 
-int main()
+int main(int argc,char* argv[])
 {
     external_sorting("input.txt","output.txt");
 	return 0;
