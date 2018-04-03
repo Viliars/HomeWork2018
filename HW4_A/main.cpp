@@ -21,12 +21,12 @@ while(lf+1<rg)
 {
     int mid=(lf+rg)>>1;
     sum=0;
-    for(int i=0;i<n;++i) sum+=a[i]%mid;
-    if(sum>=k) rg=mid;
-    else lf=mid;
+    for(int i=0;i<n;++i) sum+=a[i]/mid;
+    if(sum>=k) lf=mid;
+    else rg=mid;
 }
 sum=0;
-for(int i=0;i<n;++i) sum+=a[i]%rg;
+for(int i=0;i<n;++i) sum+=a[i]/rg;
 if(sum>=k) cout<<rg;
 else cout<<lf;
     return 0;
