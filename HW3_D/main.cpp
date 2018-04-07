@@ -1,7 +1,6 @@
 #include <iostream>
 #include <vector>
 using namespace std;
-const unsigned FF=256;
 int buf[FF];
 int main()
 {
