@@ -3,6 +3,7 @@
 #include <fstream>
 #include <algorithm>
 #include <cmath>
+#include <cstdio>
 namespace hull{
     typedef int uint;
     const uint FF=256;
@@ -79,6 +80,11 @@ int sqr(int x)
     return x*x;
 }
 
+
+bool onLine(Point& a,Point& b,Point& c){
+return ((c.x-a.x)*(b.y-a.y))==((b.x-a.x)*(c.y-a.y));
+}
+
 int main()
 {
     vector<Point> a;
@@ -97,11 +103,13 @@ int main()
     {
         per+=sqrt(sqr(a[i].x-a[i-1].x)+sqr(a[i].y-a[i-1].y));
     }
-    double buf=sqrt(sqr(a[a.size()-1].x-a[0].x)+sqr(a[a.size()-1].y-a[0].y));
-    if(per!=buf)
+    int flag=0;
+    for(size_t i=2;i<a.size();++i)
     {
-     per+=buf;
+        flag+=(int)onLine(a[0],a[1],a[i]);
     }
-    cout<<per;
+    flag+=2;
+    if(flag!=(int)a.size()) per+=sqrt(sqr(a[a.size()-1].x-a[0].x)+sqr(a[a.size()-1].y-a[0].y));
+    printf("%.2f\n", per);
     return 0;
 }
