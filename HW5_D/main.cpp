@@ -1,16 +1,15 @@
-#include<stdio.h>
-#include<stdlib.h>
+#include<iostream>
+#include<vector>
+#include<iterator>
 
-typedef unsigned int uint;
-
-void prop(int * arr, uint i)
+void prop(std::vector<int>& arr, unsigned i)
 {
 	if (i == 1) return;
 	arr[i >> 1] = arr[i] ^ arr[i ^ 1];
 	prop(arr, i >> 1);
 }
 
-int op_xor(int * arr, uint left, uint right)
+int op_xor(std::vector<int>& arr, unsigned left, unsigned right)
 {
 	int res = 0;
 	if (left & 1) res ^= arr[left++];
@@ -21,29 +20,33 @@ int op_xor(int * arr, uint left, uint right)
 
 int main()
 {
-	uint n, m, code, l, r, c;
-	int * arr;
-	scanf("%d %d", &n, &m);
+	unsigned n, m, code, l, r, c;
+	std::vector<int> arr;
+	std::vector<int> res;
+	std::cin>>n>>m;
 	for (code = 1; (n - 1) >> code > 0; ++code);
 	c = (1 << code);
-	arr = (int *)calloc(c << 1, sizeof(int));
-	for (int i = c; i < n + c; ++i)
+	arr.reserve(c << 1);
+	for (int i = 0; i < n; ++i)
 	{
-		scanf("%d", arr + i);
-		prop(arr, i);
+		std::cin>>arr[i+c];
+		prop(arr, i+c);
 	}
 	for (int i = 0; i < m; ++i)
 	{
-		scanf("%d %d %d", &code, &l, &r);
-		if (code == 2)
+		std::cin>>code>>l>>r;
+		if (code==1)
 		{
 			arr[c + l] = r;
 			prop(arr, c + l);
+			res.push_back(op_xor (arr, c + l, c + r));
 		}
 		else
 		{
-			printf("%d\n", op_xor (arr, c + l, c + r));
+            arr[c + l] = r;
+			prop(arr, c + l);
 		}
 	}
+	std::copy(res.begin(), res.end(), std::ostream_iterator<int>(std::cout, "\n"));
 	return 0;
 }
