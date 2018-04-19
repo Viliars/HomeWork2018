@@ -2,50 +2,47 @@
 #include<vector>
 #include<iterator>
 
-void prop(std::vector<int>& arr, unsigned i)
+int calc(std::vector<int>& a, unsigned left,unsigned right,bool flag)
 {
-	if (i == 1) return;
-	arr[i >> 1] = arr[i] ^ arr[i ^ 1];
-	prop(arr, i >> 1);
-}
-
-int op_xor(std::vector<int>& arr, unsigned left, unsigned right)
-{
-	int res = 0;
-	if (left & 1) res ^= arr[left++];
-	if (!(right & 1)) res ^= arr[right--];
-	if (right > left) res ^= op_xor (arr, left >> 1, right >> 1);
-	return res;
+    if(flag)
+        {
+            if(left==1) return 0;
+            a[left>>1]=a[left]^a[left^1];
+            calc(a,left>>1,0,true);
+        }
+    else
+        {
+            int res=0;
+            if(left&1) res^=a[left++];
+            if(!(right&1)) res^=a[right--];
+            if (right>left) res^=calc(a,left>>1,right>>1,false);
+            return res;
+        }
+return 0;
 }
 
 int main()
 {
-	unsigned n, m, code, l, r, c;
-	std::vector<int> arr;
-	std::vector<int> res;
+	unsigned n, m;
+	std::vector<int> a;
 	std::cin>>n>>m;
+    unsigned left, right;
+    unsigned core;
+    unsigned code;
 	for (code = 1; (n - 1) >> code > 0; ++code);
-	c = (1 << code);
-	arr.reserve(c << 1);
-	for (int i = 0; i < n; ++i)
+	core = (1 << code);
+    a.reserve(core << 1);
+	for (unsigned i = 0; i < n; ++i)
 	{
-		std::cin>>arr[i+c];
-		prop(arr, i+c);
+		std::cin>>a[i+core];
 	}
-	for (int i = 0; i < m; ++i)
+	for(unsigned i=0;i<n;i++) calc(a,i+core,0,true);
+	std::vector<int> res;
+	for (unsigned i=0;i<m;++i)
 	{
-		std::cin>>code>>l>>r;
-		if (code==1)
-		{
-			arr[c + l] = r;
-			prop(arr, c + l);
-			res.push_back(op_xor (arr, c + l, c + r));
-		}
-		else
-		{
-            arr[c + l] = r;
-			prop(arr, c + l);
-		}
+		std::cin>>code>>left>>right;
+		if (code == 1) res.push_back(calc(a, core + left, core + right,false));
+		else a[core+left]=right,calc(a,core+left,0,true);
 	}
 	std::copy(res.begin(), res.end(), std::ostream_iterator<int>(std::cout, "\n"));
 	return 0;
